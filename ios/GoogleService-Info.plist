@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyCqIv1OeFosD_oomqW99o3QrRq2LbmdzpQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>394950818011</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.nima.AliMarket</string>
+	<key>PROJECT_ID</key>
+	<string>alimarket-b9801</string>
+	<key>STORAGE_BUCKET</key>
+	<string>alimarket-b9801.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:394950818011:ios:8ed4ffe7de654c885134fe</string>
+</dict>
+</plist>
