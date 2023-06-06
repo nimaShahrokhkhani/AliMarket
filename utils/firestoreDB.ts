@@ -1,13 +1,24 @@
 import firestore from '@react-native-firebase/firestore';
-import { Product, User } from './types';
+import { Category, Product, User } from './types';
 
-export const getProducts = (startAfterDate: number, limit: number) => {
+export const getProducts = (limit: number, category?: Category) => {
     return (
         firestore()
             .collection('Products')
             .orderBy('dateTime', 'desc')
-            // .startAt(startAfterDate)
             .limit(limit)
+            // .where('category', '==', category)
+            // .get()
+    );
+}
+
+export const searchProducts = (category?: Category, searchName?: string) => {
+    return (
+        firestore()
+            .collection('Products')
+            .where('name', '>=', searchName)
+            .where('name', '<=', searchName+ '\uf8ff')
+            // .where('category', '==', Category.Men)
             .get()
     );
 }

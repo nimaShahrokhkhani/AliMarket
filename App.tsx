@@ -14,7 +14,7 @@ import {
 import { HomeScreen } from './src/home/HomeScreen';
 import { CategoryScreen } from './src/category/CategoryScreen';
 import { ProductScreen } from './src/product/ProductScreen';
-import { Product } from './utils/types';
+import { Category, Product } from './utils/types';
 import { LoginScreen } from './src/login/LoginScreen';
 import { RegisterScreen } from './src/register/RegisterScreen';
 import { Provider } from 'react-redux';
@@ -24,7 +24,7 @@ import { CartScreen } from './src/cart/CartScreen';
 export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
-  Home: undefined;
+  Home: { category?: Category };
   Category: undefined;
   Cart: undefined;
   Product: { product: Product };

@@ -32,6 +32,13 @@ export const userSlice = createSlice({
             updateUser(state);
             return state;
         },
+        deleteItemCart: (state, action: PayloadAction<ProductCart>) => {
+            const cartList = state.cart ? state.cart : [];
+            const newCartList = cartList.filter(item => item.id !== action.payload.id);
+            state.cart = newCartList;
+            updateUser(state);
+            return state;
+        },
         updateFavourites: (state, action: PayloadAction<Product[]>) => {
             state.favourites = [...action.payload];
             updateUser(state);
@@ -41,5 +48,5 @@ export const userSlice = createSlice({
 
 })
 
-export const { loginUser, addToCart, updateCart, updateFavourites } = userSlice.actions;
+export const { loginUser, addToCart, updateCart, deleteItemCart, updateFavourites } = userSlice.actions;
 export default userSlice.reducer;

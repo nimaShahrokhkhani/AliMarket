@@ -2,7 +2,7 @@ import { Image, StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import { Product, ProductCart } from "../../utils/types"
 import { Colors } from "../../assets/colors/Colors";
 import { useDispatch } from "react-redux";
-import { addToCart, updateCart } from "../redux-toolkit/userSlice";
+import { addToCart, deleteItemCart, updateCart } from "../redux-toolkit/userSlice";
 
 interface PropType {
     product: ProductCart
@@ -16,8 +16,12 @@ export const CartItem = (props: PropType) => {
         dispatch(updateCart(cartProduct));
     }
     const onDecreaseCount = () => {
-        const cartProduct: ProductCart = { ...product, count: --product.count };
-        dispatch(updateCart(cartProduct));
+        if (product.count === 1) {
+            dispatch(deleteItemCart(product));
+        } else {
+            const cartProduct: ProductCart = { ...product, count: --product.count };
+            dispatch(updateCart(cartProduct));
+        }
     }
     return (
         <View style={styles.container}>
@@ -26,7 +30,7 @@ export const CartItem = (props: PropType) => {
             </View>
             <View style={styles.nameContainer}>
                 <Text style={styles.name}>{product.name}</Text>
-                <Text style={styles.price}>$ {product.price}</Text>
+                <Text style={styles.price}>$ {product.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Text>
                 <View style={styles.sizeContainer}>
                     <Text style={styles.sizeTitle}>size</Text>
                     <Text style={styles.size}>{product.size}</Text>
@@ -108,7 +112,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: Colors.darkGray,
     },
-    sizeContainer: { 
+    sizeContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 10

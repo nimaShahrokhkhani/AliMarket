@@ -22,7 +22,7 @@ export const CustomCardItem = (props: PropType) => {
         <TouchableOpacity style={styles.container} onPress={() => onItemPress(data)}>
             <Image source={{ uri: data.imageUrl }} style={styles.image} />
             <View style={styles.infoContainer}>
-                <Text style={styles.price}>${data.price}</Text>
+                <Text style={styles.price}>${data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Text>
                 <TouchableOpacity style={styles.favContainer} onPress={() => onFavBtnPress(data)}>
                     <Image source={favImage} style={styles.favourit} />
                 </TouchableOpacity>

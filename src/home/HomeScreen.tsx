@@ -2,8 +2,8 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from "../../App";
-import { getProducts } from "../../utils/firestoreDB";
-import { Product } from "../../utils/types";
+import { getProducts, searchProducts } from "../../utils/firestoreDB";
+import { Category, Product } from "../../utils/types";
 import { CustomCardItem } from "../components/CustomCardItem";
 import { CustomTextInput } from "../components/CustomTextInput";
 import { CustomCart } from "../components/CustomCart";
@@ -11,9 +11,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux-toolkit/store";
 import { updateFavourites } from "../redux-toolkit/userSlice";
 
-export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
+export const HomeScreen = ({ navigation, route }: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
     const user = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch();
+    const [search, setSearch] = useState('');
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: false
@@ -44,19 +45,24 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParam
     // }
     const [products, setProducts] = useState<Product[]>([]);
     useEffect(() => {
-        getProducts(1, 10).then(querySnapshot => {
-            let productList: Product[] = [];
-            querySnapshot.forEach(documentSnapshot => {
-                const product = { id: documentSnapshot.id, ...documentSnapshot.data() }
-                productList.push(product as Product)
-            });
-            setProducts(productList);
-        })
-    }, [])
+        const category = route.params?.category;
+        const getProductList = category ? getProducts(10).where('category', '==', category).get() : getProducts(10).get();
+        getProductList
+            .then(querySnapshot => {
+                let productList: Product[] = [];
+                querySnapshot.forEach(documentSnapshot => {
+                    const product = { id: documentSnapshot.id, ...documentSnapshot.data() }
+                    productList.push(product as Product)
+                });
+                setProducts(productList);
+            }).catch(error => {
+                console.log(error)
+            })
+    }, [route.params])
 
     const onFavPress = (product: Product) => {
         let favourites: Product[] = user.favourites || [];
-        if(favourites.find(item => product.id === item.id)) {
+        if (favourites.find(item => product.id === item.id)) {
             favourites = favourites.filter(item => product.id !== item.id);
             dispatch(updateFavourites(favourites));
         } else {
@@ -69,6 +75,18 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParam
         navigation.navigate('Product', { product })
     }
 
+    const onSearch = (text: string) => {
+        setSearch(text);
+        searchProducts(0, text).then(querySnapshot => {
+            let productList: Product[] = [];
+            querySnapshot.forEach(documentSnapshot => {
+                const product = { id: documentSnapshot.id, ...documentSnapshot.data() }
+                productList.push(product as Product)
+            });
+            setProducts(productList);
+        })
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.headerContainer}>
@@ -78,7 +96,12 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParam
                 </TouchableOpacity>
             </View>
             <View style={styles.searchContainer}>
-                <CustomTextInput placeholder="" style={styles.searchInput} icon={require('../../assets/images/search.png')} />
+                <CustomTextInput
+                    placeholder=""
+                    style={styles.searchInput}
+                    icon={require('../../assets/images/search.png')}
+                    value={search}
+                    onChangeText={onSearch} />
                 <TouchableOpacity style={styles.filterContainer} onPress={() => navigation.navigate('Category')}>
                     <Image source={require('../../assets/images/filter.png')} style={styles.filter} />
                 </TouchableOpacity>

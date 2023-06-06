@@ -13,18 +13,28 @@ export const CategoryScreen = ({ navigation }: NativeStackScreenProps<RootStackP
     const scaleWomen = useSharedValue(1);
     const offsetKidsX = useSharedValue(0);
     const scaleKids = useSharedValue(1);
+    const [category, setCategory] = useState<Category>();
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: false
         })
     }, [navigation])
 
+    const navigateToHome = () => {
+        navigation.navigate('Home', { category })
+    }
+
+    const reset = () => {
+        setCategory(undefined);
+        navigateToHome();
+    }
+
     const animatedStyle = (offsetX: SharedValue<number>, scale: SharedValue<number>) => useAnimatedStyle(() => {
         return {
             transform: [{ translateX: withSpring(offsetX.value) }, {
                 scale: withSpring(scale.value, {}, (finished) => {
                     if (finished && scale.value > 1) {
-                        runOnJS(navigation.navigate)("Home")
+                        runOnJS(navigateToHome)()
                     }
                 })
             }],
@@ -33,6 +43,7 @@ export const CategoryScreen = ({ navigation }: NativeStackScreenProps<RootStackP
     })
 
     const onImagePress = (category: Category) => {
+        setCategory(category);
         switch (category) {
             case Category.Men:
                 offsetMenX.value = 400;
@@ -51,6 +62,10 @@ export const CategoryScreen = ({ navigation }: NativeStackScreenProps<RootStackP
 
     return (
         <SafeAreaView style={styles.container}>
+            <TouchableOpacity style={styles.resetContainer} onPress={reset}>
+                <Image source={require('../../assets/images/funnel.png')} style={styles.resetIcon}/>
+                <Text style={styles.reset}>Reset Filter...</Text>
+            </TouchableOpacity>
             <Animated.View style={[styles.imageContainer, animatedStyle(offsetMenX, scaleMen)]}>
                 <TouchableOpacity style={styles.imageContainer} onPress={() => onImagePress(Category.Men)}>
                     <Image source={require('../../assets/images/man.jpg')} style={styles.manImage} />
@@ -94,5 +109,20 @@ const styles = StyleSheet.create({
         flex: 1,
         width: 150,
         borderRadius: 20,
+    },
+    resetContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    reset: {
+        fontSize: 18,
+        color: Colors.red,
+        fontWeight: 'bold'
+    },
+    resetIcon: {
+        width: 20,
+        height: 20,
+        marginEnd: 5
     }
 })
