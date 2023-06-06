@@ -1,18 +1,19 @@
-import { FC, useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from "../../App";
-import { addProduct, getProducts, updateProduct } from "../../utils/firestoreDB";
-import { Category, Product, Size } from "../../utils/types";
+import { getProducts } from "../../utils/firestoreDB";
+import { Product } from "../../utils/types";
 import { CustomCardItem } from "../components/CustomCardItem";
 import { CustomTextInput } from "../components/CustomTextInput";
 import { CustomCart } from "../components/CustomCart";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux-toolkit/store";
+import { updateFavourites } from "../redux-toolkit/userSlice";
 
 export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
     const user = useSelector((state: RootState) => state.user);
-    console.log('homeeeeeeee=>', user)
+    const dispatch = useDispatch();
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: false
@@ -53,15 +54,15 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParam
         })
     }, [])
 
-    const onFavPress = (id: string, isFavourit: boolean) => {
-        const productList: Product[] = products.map((product) => {
-            if (product.id === id) {
-                product.isMyFavourit = isFavourit;
-            }
-            updateProduct(product);
-            return product;
-        })
-        setProducts(productList);
+    const onFavPress = (product: Product) => {
+        let favourites: Product[] = user.favourites || [];
+        if(favourites.find(item => product.id === item.id)) {
+            favourites = favourites.filter(item => product.id !== item.id);
+            dispatch(updateFavourites(favourites));
+        } else {
+            favourites = [...favourites, product];
+            dispatch(updateFavourites(favourites));
+        }
     }
 
     const onItemPress = (product: Product) => {

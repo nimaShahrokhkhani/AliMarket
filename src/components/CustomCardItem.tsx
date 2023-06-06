@@ -1,17 +1,20 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Product } from "../../utils/types"
+import { useSelector } from "react-redux"
+import { RootState } from "../redux-toolkit/store"
 
 interface PropType {
     data: Product,
-    onFavPress: (id: string, isFavourit: boolean) => void,
+    onFavPress: (product: Product) => void,
     onItemPress: (product: Product) => void
 }
 
 export const CustomCardItem = (props: PropType) => {
+    const user = useSelector((state: RootState) => state.user);
     const data = props.data;
     const onFavBtnPress = props.onFavPress;
     const onItemPress = props.onItemPress;
-    const favImage = data.isMyFavourit ?
+    const favImage = user.favourites?.find(item => item.id === data.id) ?
         require('../../assets/images/heart-filled.png') :
         require('../../assets/images/heart.png');
     
@@ -20,7 +23,7 @@ export const CustomCardItem = (props: PropType) => {
             <Image source={{ uri: data.imageUrl }} style={styles.image} />
             <View style={styles.infoContainer}>
                 <Text style={styles.price}>${data.price}</Text>
-                <TouchableOpacity style={styles.favContainer} onPress={() => onFavBtnPress(data.id, !data.isMyFavourit)}>
+                <TouchableOpacity style={styles.favContainer} onPress={() => onFavBtnPress(data)}>
                     <Image source={favImage} style={styles.favourit} />
                 </TouchableOpacity>
             </View>
