@@ -6,11 +6,14 @@ import { Colors } from "../../assets/colors/Colors";
 import { CustomTextInput } from "../components/CustomTextInput";
 import auth from '@react-native-firebase/auth';
 import { addUser } from "../../utils/firestoreDB";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../redux-toolkit/userSlice";
 
 export const RegisterScreen = ({ navigation, route }: NativeStackScreenProps<RootStackParamList, 'Register'>) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const dispatch = useDispatch();
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: false
@@ -25,7 +28,7 @@ export const RegisterScreen = ({ navigation, route }: NativeStackScreenProps<Roo
         addUser({
             email
         }).then(() => {
-            navigation.navigate('Home');
+            navigation.navigate('Login');
         }).catch(error => {
             console.log(error)
         })
@@ -65,17 +68,19 @@ export const RegisterScreen = ({ navigation, route }: NativeStackScreenProps<Roo
                 <CustomTextInput
                     value={password}
                     onChangeText={setPassword}
+                    secureTextEntry={true}
                     placeholder="Password"
                     icon={require('../../assets/images/password.png')}
                     style={styles.input} />
                 <CustomTextInput
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
+                    secureTextEntry={true}
                     placeholder="Confirm Password"
                     icon={require('../../assets/images/password.png')}
                     style={styles.input} />
                 <TouchableOpacity style={styles.loginBtnContainer} onPress={register}>
-                    <Text style={styles.loginBtn}>LOGIN</Text>
+                    <Text style={styles.loginBtn}>Register</Text>
                 </TouchableOpacity>
                 <View style={styles.signupContainer}>
                     <Text>Already have an account?</Text>

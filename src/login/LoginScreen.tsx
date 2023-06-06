@@ -5,10 +5,17 @@ import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "r
 import { Colors } from "../../assets/colors/Colors";
 import { CustomTextInput } from "../components/CustomTextInput";
 import auth from '@react-native-firebase/auth';
+import { getUser } from "../../utils/firestoreDB";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux-toolkit/store";
+import { User } from "../../utils/types";
+import { loginUser } from "../redux-toolkit/userSlice";
 
 export const LoginScreen = ({ navigation, route }: NativeStackScreenProps<RootStackParamList, 'Login'>) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('A@b.com');
+    const [password, setPassword] = useState('123456');
+    const user = useSelector((state: RootState) => state.user);
+    const dispatch = useDispatch();
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: false
@@ -19,11 +26,24 @@ export const LoginScreen = ({ navigation, route }: NativeStackScreenProps<RootSt
         navigation.navigate('Register');
     }
 
+    const getUserFromDB = (email: string) => {
+        getUser(email).then(querySnapshot => {
+            querySnapshot.forEach((doc) => {
+                // console.log(doc.id, "=>", doc.data());
+                const user: User = { ...doc.data(), userId: doc.id };
+                dispatch(loginUser(user));
+                navigation.navigate('Home');
+            });
+        }).catch(error => {
+            console.log(error)
+        })
+    }
+
     const login = () => {
         auth()
             .signInWithEmailAndPassword(email, password)
             .then(() => {
-                navigation.navigate('Home');
+                getUserFromDB(email);
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {

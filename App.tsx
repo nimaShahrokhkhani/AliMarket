@@ -17,12 +17,16 @@ import { ProductScreen } from './src/product/ProductScreen';
 import { Product } from './utils/types';
 import { LoginScreen } from './src/login/LoginScreen';
 import { RegisterScreen } from './src/register/RegisterScreen';
+import { Provider } from 'react-redux';
+import { store } from './src/redux-toolkit/store';
+import { CartScreen } from './src/cart/CartScreen';
 
 export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Home: undefined;
   Category: undefined;
+  Cart: undefined;
   Product: { product: Product };
 };
 
@@ -31,15 +35,18 @@ function App(): JSX.Element {
   const Stack = createNativeStackNavigator<RootStackParamList>();
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName='Login'>
-        <Stack.Screen name='Login' component={LoginScreen} />
-        <Stack.Screen name='Register' component={RegisterScreen} />
-        <Stack.Screen name='Home' component={HomeScreen} />
-        <Stack.Screen name='Category' component={CategoryScreen} />
-        <Stack.Screen name='Product' component={ProductScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName='Login'>
+          <Stack.Screen name='Login' component={LoginScreen} />
+          <Stack.Screen name='Register' component={RegisterScreen} />
+          <Stack.Screen name='Home' component={HomeScreen} />
+          <Stack.Screen name='Category' component={CategoryScreen} />
+          <Stack.Screen name='Cart' component={CartScreen} />
+          <Stack.Screen name='Product' component={ProductScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 

@@ -3,11 +3,16 @@ import { FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from "../../App";
 import { addProduct, getProducts, updateProduct } from "../../utils/firestoreDB";
-import { Category, Product } from "../../utils/types";
+import { Category, Product, Size } from "../../utils/types";
 import { CustomCardItem } from "../components/CustomCardItem";
 import { CustomTextInput } from "../components/CustomTextInput";
+import { CustomCart } from "../components/CustomCart";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux-toolkit/store";
 
 export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
+    const user = useSelector((state: RootState) => state.user);
+    console.log('homeeeeeeee=>', user)
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: false
@@ -16,7 +21,7 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParam
     // for (let i = 0; i < 20; i++) {
     //     console.log(i)
     //     addProduct({
-    //         id: `product-${Math.random()}-${i}`,
+    //         // id: `product-${Math.random()}-${i}`,
     //         name: `product ${i}`,
     //         dateTime: Date.now(),
     //         category: Category.Men,
@@ -29,7 +34,9 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParam
     //         },
     //         description: `This is a test product from Nike ${i}`,
     //         type: 'Jacket',
-    //         imageUrl: 'https://picsum.photos/200/300'
+    //         imageUrl: 'https://picsum.photos/200/300',
+    //         size: [Size.XL, Size.LARGE, Size.MEDIUM, Size.SMALL],
+    //         count: 20
     //     }).then(res => {
     //         console.log(res)
     //     }).catch(err => console.log(err))
@@ -37,7 +44,6 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParam
     const [products, setProducts] = useState<Product[]>([]);
     useEffect(() => {
         getProducts(1, 10).then(querySnapshot => {
-            console.log('Total users: ', querySnapshot.size);
             let productList: Product[] = [];
             querySnapshot.forEach(documentSnapshot => {
                 const product = { id: documentSnapshot.id, ...documentSnapshot.data() }
@@ -64,6 +70,12 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParam
 
     return (
         <SafeAreaView style={styles.container}>
+            <View style={styles.headerContainer}>
+                <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
+                <TouchableOpacity style={styles.cart} onPress={() => navigation.navigate('Cart')}>
+                    <CustomCart itemsCount={user.cart?.length || 0} />
+                </TouchableOpacity>
+            </View>
             <View style={styles.searchContainer}>
                 <CustomTextInput placeholder="" style={styles.searchInput} icon={require('../../assets/images/search.png')} />
                 <TouchableOpacity style={styles.filterContainer} onPress={() => navigation.navigate('Category')}>
@@ -74,7 +86,7 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParam
                 data={products}
                 renderItem={({ item }) => <CustomCardItem data={item} onFavPress={onFavPress} onItemPress={onItemPress} />}
                 numColumns={2}
-                keyExtractor={(item, index) => item.id} />
+                keyExtractor={(item, index) => index.toString()} />
         </SafeAreaView>
     )
 }
@@ -82,6 +94,19 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackParam
 const styles = StyleSheet.create({
     container: {
         margin: 5
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        marginVertical: 10,
+    },
+    logo: {
+        width: 150,
+        height: 30
+    },
+    cart: {
+        flex: 1,
+        alignItems: 'flex-end',
+        marginEnd: 10
     },
     searchInput: {
         flex: 1

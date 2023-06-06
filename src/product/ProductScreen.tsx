@@ -1,9 +1,14 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../App";
-import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useLayoutEffect, useState } from "react";
+import { FlatList, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useLayoutEffect, useRef, useState } from "react";
 import StarRating from "react-native-star-rating-widget";
 import { Colors } from "../../assets/colors/Colors";
+import { useDispatch } from "react-redux";
+import { Product, ProductCart, Size } from "../../utils/types";
+import { addToCart } from "../redux-toolkit/userSlice";
+import { Picker } from '@react-native-picker/picker';
+import DropDownPicker from "react-native-dropdown-picker";
 
 export const ProductScreen = ({ navigation, route }: NativeStackScreenProps<RootStackParamList, 'Product'>) => {
     useLayoutEffect(() => {
@@ -16,8 +21,18 @@ export const ProductScreen = ({ navigation, route }: NativeStackScreenProps<Root
         require('../../assets/images/heart-filled.png') :
         require('../../assets/images/heart.png');
     const [rating, setRating] = useState(product.star);
+    const [selectedSize, setSelectedSize] = useState('');
+    const [items, setItems] = useState(product.size.map(item => ({ label: item, value: item })))
+    const [open, setOpen] = useState(false);
+    const dispatch = useDispatch();
 
     const onBackPress = () => {
+        navigation.goBack();
+    }
+
+    const onAddToCart = () => {
+        const cartProduct: ProductCart = {...product, size: selectedSize as Size, count: 1};
+        dispatch(addToCart(cartProduct));
         navigation.goBack();
     }
 
@@ -26,36 +41,56 @@ export const ProductScreen = ({ navigation, route }: NativeStackScreenProps<Root
             <TouchableOpacity style={styles.backContainer} onPress={onBackPress}>
                 <Image source={require('../../assets/images/back.png')} style={styles.backImage} />
             </TouchableOpacity>
-            <ScrollView style={styles.container}>
-                <Image source={{ uri: product.imageUrl }} style={styles.image} />
-                <SafeAreaView>
-                    <View style={styles.topInfoContainer}>
-                        <View style={styles.brandContainer}>
-                            <Image source={{ uri: product.brand.icon }} style={styles.brandIcon} />
-                            <Text style={styles.brandName}>{product.brand.name}</Text>
-                        </View>
-                        <TouchableOpacity style={styles.favContainer}>
-                            <Image source={favImage} style={styles.favourit} />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.nameContainer}>
-                        <Text style={styles.name}>{product.name}</Text>
-                        <Text style={styles.price}>$ {product.price}</Text>
-                    </View>
-                    <View style={styles.ratingContainer}>
-                        <StarRating
-                            rating={rating}
-                            onChange={setRating}
-                            starSize={20}
-                        />
-                        <Text style={styles.rate}>{product.star}</Text>
-                    </View>
-                    <View style={styles.descriptionContainer}>
-                        <Text style={styles.description}>{product.description}</Text>
-                    </View>
-                </SafeAreaView>
-            </ScrollView>
-            <TouchableOpacity style={styles.addToCartContainer}>
+            <FlatList
+                style={styles.container}
+                data={[]}
+                ListHeaderComponent={() => (
+                    <>
+                        <Image source={{ uri: product.imageUrl }} style={styles.image} />
+                        <SafeAreaView>
+                            <View style={styles.topInfoContainer}>
+                                <View style={styles.brandContainer}>
+                                    <Image source={{ uri: product.brand.icon }} style={styles.brandIcon} />
+                                    <Text style={styles.brandName}>{product.brand.name}</Text>
+                                </View>
+                                <TouchableOpacity style={styles.favContainer}>
+                                    <Image source={favImage} style={styles.favourit} />
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.nameContainer}>
+                                <Text style={styles.name}>{product.name}</Text>
+                                <Text style={styles.price}>$ {product.price}</Text>
+                            </View>
+                            <View style={styles.sizeContainer}>
+                                <View style={styles.ratingContainer}>
+                                    <StarRating
+                                        rating={rating}
+                                        onChange={setRating}
+                                        starSize={20}
+                                    />
+                                    <Text style={styles.rate}>{product.star}</Text>
+                                </View>
+                                <DropDownPicker
+                                    style={styles.size}
+                                    open={open}
+                                    value={selectedSize}
+                                    items={items}
+                                    setOpen={setOpen}
+                                    setValue={setSelectedSize}
+                                    setItems={setItems}
+                                    listItemContainerStyle={{ zIndex: 100 }}
+                                />
+                            </View>
+                            <View style={styles.descriptionContainer}>
+                                <Text style={styles.description}>{product.description}</Text>
+                            </View>
+                        </SafeAreaView>
+                    </>
+                )}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={() => null}
+            />
+            <TouchableOpacity style={styles.addToCartContainer} onPress={onAddToCart}>
                 <Text style={styles.addToCart}>Add to cart</Text>
             </TouchableOpacity>
         </View>
@@ -118,13 +153,14 @@ const styles = StyleSheet.create({
     ratingContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 10
+        marginTop: 10,
     },
     rate: {
         marginStart: 5
     },
     descriptionContainer: {
-        marginTop: 20
+        marginTop: 20,
+        zIndex: -1
     },
     description: {
         color: Colors.darkGray
@@ -156,5 +192,12 @@ const styles = StyleSheet.create({
     backImage: {
         width: 20,
         height: 20
+    },
+    sizeContainer: {
+        flex: 1
+    },
+    size: {
+        alignSelf: 'center',
+        marginTop: 10,
     }
 })
