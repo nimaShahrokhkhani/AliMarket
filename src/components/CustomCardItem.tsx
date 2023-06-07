@@ -5,8 +5,8 @@ import { RootState } from "../redux-toolkit/store"
 
 interface PropType {
     data: Product,
-    onFavPress: (product: Product) => void,
-    onItemPress: (product: Product) => void
+    onFavPress?: (product: Product) => void,
+    onItemPress?: (product: Product) => void
 }
 
 export const CustomCardItem = (props: PropType) => {
@@ -19,11 +19,11 @@ export const CustomCardItem = (props: PropType) => {
         require('../../assets/images/heart.png');
     
     return (
-        <TouchableOpacity style={styles.container} onPress={() => onItemPress(data)}>
+        <TouchableOpacity style={styles.container} onPress={() => onItemPress && onItemPress(data)}>
             <Image source={{ uri: data.imageUrl }} style={styles.image} />
             <View style={styles.infoContainer}>
                 <Text style={styles.price}>${data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Text>
-                <TouchableOpacity style={styles.favContainer} onPress={() => onFavBtnPress(data)}>
+                <TouchableOpacity style={styles.favContainer} onPress={() => onFavBtnPress && onFavBtnPress(data)}>
                     <Image source={favImage} style={styles.favourit} />
                 </TouchableOpacity>
             </View>

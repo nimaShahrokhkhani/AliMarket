@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import { FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from "../../App";
 import { getProducts, searchProducts } from "../../utils/firestoreDB";
 import { Category, Product } from "../../utils/types";
 import { CustomCardItem } from "../components/CustomCardItem";
@@ -10,8 +9,9 @@ import { CustomCart } from "../components/CustomCart";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux-toolkit/store";
 import { updateFavourites } from "../redux-toolkit/userSlice";
+import { RootBottomTabParamList } from "../homeApp/HomeApp";
 
-export const HomeScreen = ({ navigation, route }: NativeStackScreenProps<RootStackParamList, 'Home'>) => {
+export const HomeScreen = ({ navigation, route }: NativeStackScreenProps<RootBottomTabParamList, 'Home'>) => {
     const user = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch();
     const [search, setSearch] = useState('');

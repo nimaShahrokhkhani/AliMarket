@@ -20,11 +20,12 @@ import { RegisterScreen } from './src/register/RegisterScreen';
 import { Provider } from 'react-redux';
 import { store } from './src/redux-toolkit/store';
 import { CartScreen } from './src/cart/CartScreen';
+import { HomeApp } from './src/homeApp/HomeApp';
 
 export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
-  Home: { category?: Category };
+  HomeApp: undefined;
   Category: undefined;
   Cart: undefined;
   Product: { product: Product };
@@ -40,7 +41,7 @@ function App(): JSX.Element {
         <Stack.Navigator initialRouteName='Login'>
           <Stack.Screen name='Login' component={LoginScreen} />
           <Stack.Screen name='Register' component={RegisterScreen} />
-          <Stack.Screen name='Home' component={HomeScreen} />
+          <Stack.Screen name='HomeApp' component={HomeApp} />
           <Stack.Screen name='Category' component={CategoryScreen} />
           <Stack.Screen name='Cart' component={CartScreen} />
           <Stack.Screen name='Product' component={ProductScreen} />

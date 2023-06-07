@@ -32,7 +32,7 @@ export const LoginScreen = ({ navigation, route }: NativeStackScreenProps<RootSt
                 // console.log(doc.id, "=>", doc.data());
                 const user: User = { ...doc.data(), userId: doc.id };
                 dispatch(loginUser(user));
-                navigation.navigate('Home');
+                navigation.navigate('HomeApp');
             });
         }).catch(error => {
             console.log(error)
